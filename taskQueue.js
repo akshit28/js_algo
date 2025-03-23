@@ -37,5 +37,5 @@ taskQueue.addTask(
     () => delay(500).then(() => console.log("Task 4 done"))
 );
 
-taskQueue.run().then(() => console.log("All tasks completed."));
+taskQueue.run().then((val) => console.log("All tasks completed.", val));
 
