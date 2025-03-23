@@ -67,6 +67,30 @@ function promisePolyfill(executor){
   
           })
       }
+
+      this.finally = function (callback) {
+        return new promisePolyfill((resolve, reject) => {
+            function handleFinally() {
+                try {
+                    callback(); // Call the cleanup function
+                    if (value instanceof promisePolyfill) {
+                        value.then(resolve).catch(reject);
+                    } else {
+                        // Pass through the original value or error
+                        isFulfilled ? resolve(value) : reject(value);
+                    }
+                } catch (error) {
+                    reject(error);
+                }
+            }
+
+            if (isFulfilled) {
+                queueMicrotask(handleFinally);
+            } else {
+                onResolve = onReject = handleFinally;
+            }
+        });
+    };
   
       // this.all = function(promiseList){
       //     let result = []
