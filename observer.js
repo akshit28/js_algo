@@ -1,20 +1,19 @@
 class Observer{
     constructor(){
-        this.observers = []
+        this.observer = []
     }
 
-    subscribe(obs){
-        this.observers.push(obs)
+    subscribe(func){
+        this.observer.push(func)
     }
 
-    unSubscribe(obs){
-        this.observers = this.observers.filter((observer) => observer !== obs)
+    unsubscribe(func){
+        this.observer = this.observer.filter(fn => fn != func)
     }
 
     notify(data){
-        this.observers.forEach(obs => obs(data))
+        this.observer.forEach(fn => fn(data))
     }
-
 }
 
 const observer = new Observer()

@@ -46,4 +46,72 @@ myPromiseAll(taskList).then((result) => {
     console.log(error)
 })
 
+function promisePolyfill(executor) {
+    
+    let onResolve, onReject, isCalled = false, isFulfilled = false, value;
 
+    function resolve(val){
+        value = val
+        isFulfilled = true
+        if(typeof onResolve == 'function'){
+            isCalled = true
+            queueMicrotask(()=> onResolve(value))
+        }
+    }
+
+    function reject(val){
+        value = val
+        isFulfilled = true
+        if(typeof onReject == 'function'){
+            isCalled = true
+            queueMicrotask(()=> onReject(value))
+        }
+    }
+
+    this.then = function(callback){
+        return new promisePolyfill((resolve, reject) => {
+            onResolve = (val) => {
+                try {
+                    let result = callback(val)
+                    if(result instanceof promisePolyfill){
+                        result.then(resolve).catch(error)
+                    }else{
+                        resolve(result)
+                    }
+                } catch (error) {
+                    reject(error)
+                }
+            }          
+            
+            if(isFulfilled && !isCalled){
+                isCalled = true
+                queueMicrotask(()=> onResolve(value))
+            }
+        })
+    }
+
+    this.catch = function(callback){
+        return new promisePolyfill((resolve, reject) => {
+            onReject = (val) => {
+                try {
+                    let result = callback(val)
+                    if(result instanceof promisePolyfill){
+                        result.then(resolve).catch(error)
+                    }else{
+                        resolve(result)
+                    }
+                } catch (error) {
+                    reject(error)
+                }
+            }
+
+            if(isFulfilled && !isCalled){
+                isCalled = true
+                queueMicrotask(() => onReject(value))
+            }
+        })
+    }
+
+
+    executor(resolve, reject)
+}
