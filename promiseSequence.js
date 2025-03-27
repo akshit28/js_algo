@@ -14,12 +14,17 @@ const promises = [
     asyncTask(5)
 ]
 
-const asyncExecutor = (promises) => {
-    return promises.reduce((prev, current) => {
-        return prev.then(() => {
-            return current.then(val => console.log(val))
-        });
-    }, Promise.resolve())
+const asyncExecutor = async (promises) => {
+
+    for(let i =0;i<promises.length;i++){
+        let k = await promises[i]
+        console.log(k)
+    }
+    // return promises.reduce((prev, current) => {
+    //     return prev.then(() => {
+    //         return current.then(val => console.log(val))
+    //     });
+    // }, Promise.resolve())
 }
 
 asyncExecutor(promises)
