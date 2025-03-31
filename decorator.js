@@ -18,3 +18,15 @@ const sendMessage= (message) => {
 const decorator = withTimeStamp(withUsername(sendMessage))
 
 decorator("there")
+
+class car{
+    honks(){
+        console.log("Honks")
+    }
+}
+
+class turboCar extends car{
+    constructor(){
+        
+    }
+}
