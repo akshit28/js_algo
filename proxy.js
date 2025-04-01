@@ -34,3 +34,62 @@ console.log(grizzlyCount)
 proxyBears.polar = true
 
 delete proxyBears.polar
+
+
+function growl(){
+    return 'grrr'
+}
+
+
+const loudGrowl = new Proxy(growl, {
+    apply: function(target, thisArg, args){
+        return target().toUpperCase() + '!!!'
+    }
+})
+
+console.log(loudGrowl())
+
+const person = {
+    first: 'Bear',
+    last: 'McBer'
+}
+
+const cleverPerson  = new Proxy(person, {
+    get: function(target, prop){
+        if(!(prop in target)){
+            return prop.split('_').map(function(part){
+                return target[part]
+            }).join(' ')
+        }
+
+        return target[prop]
+    }
+})
+
+console.log(cleverPerson.last_first)
+cleverPerson.last = 'sharma'
+console.log(person.last)
+
+const bear = [
+    {
+        id: 1,
+        name: 'grizzly'
+    },
+    {
+        id: 2,
+        name: 'brown'
+    },
+    {
+        id: 4,
+        name: 'polar'
+    }
+]
+
+
+const getBear = new Proxy(bear, {
+    get: function(target, prop){
+        return target.filter(elem => elem.name == prop)
+    }
+})
+
+console.log(getBear.polar)
