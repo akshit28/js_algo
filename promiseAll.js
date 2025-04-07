@@ -16,8 +16,6 @@ const myPromiseAll = function(taskList){
                 reject(error)
             })
         })
-
-
     })
 }
 

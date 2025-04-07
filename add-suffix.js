@@ -15,19 +15,32 @@ data: [
         ], 
         };
 
-
 function addSuffix(obj, suffix){
-   if(Array.isArray(obj)){
+  if(Array.isArray(obj)){
     return obj.map(item => addSuffix(item, suffix))
-   }else if(obj && typeof obj === 'object'){
+  }else if(obj && typeof obj == 'object'){
     return Object.keys(obj).reduce((acc, key) => {
-        const newKey = key + suffix;
-        acc[newKey] = addSuffix(obj[key], suffix);
-        return acc;
+      const newKey = key+suffix
+      acc[newKey] = addSuffix(obj[key], suffix)
+      return acc
     }, {})
-   }
+  }
 
-   return obj
+  return obj
 }
+
+// function addSuffix(obj, suffix){
+//    if(Array.isArray(obj)){
+//     return obj.map(item => addSuffix(item, suffix))
+//    }else if(obj && typeof obj === 'object'){
+//     return Object.keys(obj).reduce((acc, key) => {
+//         const newKey = key + suffix;
+//         acc[newKey] = addSuffix(obj[key], suffix);
+//         return acc;
+//     }, {})
+//    }
+
+//    return obj
+// }
 
 console.log(JSON.stringify(addSuffix(obj_O, '_new')))
