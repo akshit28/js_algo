@@ -273,3 +273,74 @@ promisePolyfill.all(taskList).then((result) => {
 }).catch((error) => {
     console.log(error)
 })
+
+
+
+
+function myPromisePolyfill(executor){
+    let onResolve, onReject, isFulfilled = false, isCalled = false, value;
+
+    function resolve(val){
+        isFulfilled = true
+        value = val
+        if(typeof onResolve == 'function'){
+            isCalled = true
+            queueMicrotask(()=> onResolve(value))
+            onResolve(value)
+        }
+    }
+
+    function reject(val){
+        isFulfilled = true
+        value = val
+        if(typeof onReject == 'function'){
+            isCalled = true
+            queueMicrotask(()=> onReject(value))
+            
+        }
+    }
+
+    this.then = function(callback){
+        return new myPromisePolyfill((resolve, reject)=> {
+            onResolve = (val) => {
+                try {
+                    let result = callback(val)
+                    if(result instanceof myPromisePolyfill){
+                        result.then(resolve).catch(reject)
+                    }else{
+                        resolve(result)
+                    }
+                } catch (error) {
+                    reject(error)
+                }
+            }
+
+            if(isFulfilled && !isCalled){
+                isCalled = true
+                queueMicrotask(() => onResolve(val))
+            }
+        })
+    }
+
+    this.catch = function(callback){
+        return new myPromisePolyfill((resolve, reject) => {
+            onReject = (val) => {
+                try{
+                    let result = callback(val)
+                    if(result instanceof myPromisePolyfill){
+                        result.then(resolve).catch(reject)   
+                    }
+                }catch(error){
+                    reject(error)
+                }
+            }
+
+            if(isFulfilled && !isCalled){
+                isCalled = true
+                queueMicrotask(() => onReject(val))
+            }
+        })
+    }
+
+    executor(resolve, reject)
+}
